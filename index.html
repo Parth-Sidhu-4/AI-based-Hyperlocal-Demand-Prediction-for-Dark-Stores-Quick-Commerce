@@ -1,0 +1,2461 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI-Based Hyperlocal Demand Prediction — GSV 2026</title>
+    <meta
+      name="description"
+      content="Two-stage censored demand recovery and forecasting for dark stores and quick commerce using LightGBM, XGBoost, and MLP ensemble models."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ── Cursor ── -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- ── Progress bar ── -->
+    <div id="progress-bar"></div>
+
+    <!-- ── Page curtain ── -->
+    <div id="page-curtain"></div>
+
+    <!-- ── Mobile nav overlay ── -->
+    <div id="mobile-nav">
+      <a href="#problem" class="mobile-nav-link">Problem</a>
+      <a href="#dataset" class="mobile-nav-link">Dataset</a>
+      <a href="#architecture" class="mobile-nav-link">Architecture</a>
+      <a href="#stage1" class="mobile-nav-link">Stage 1</a>
+      <a href="#stage2" class="mobile-nav-link">Stage 2</a>
+      <a href="#results" class="mobile-nav-link">Results</a>
+      <a href="#dashboard" class="mobile-nav-link">Dashboard</a>
+      <a href="#team" class="mobile-nav-link">Team</a>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ NAV ═ -->
+    <nav id="nav">
+      <div class="nav-logo">FRN-50K · GSV 2026</div>
+      <ul class="nav-links">
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#dataset">Dataset</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#stage1">Stage 1</a></li>
+        <li><a href="#stage2">Stage 2</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#team" class="nav-cta">Team</a></li>
+      </ul>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════════════════════ HERO ═ -->
+    <section id="hero">
+      <canvas id="starfield"></canvas>
+      <div class="aurora aurora-1"></div>
+      <div class="aurora aurora-2"></div>
+      <div class="aurora aurora-3"></div>
+      <div class="hero-grid"></div>
+
+      <div class="hero-inner">
+        <div class="hero-eyebrow">
+          <div class="hero-rule"></div>
+          <span class="label">AI · Machine Learning · Quick Commerce</span>
+          <div class="hero-rule"></div>
+        </div>
+
+        <h1 class="hero-title">
+          AI-Based <em>Hyperlocal</em><br />
+          <strong>Demand Prediction</strong><br />
+          for Dark Stores
+        </h1>
+        <p class="hero-subtitle">
+          Using Censored Demand Recovery &amp; Ensemble Forecasting
+        </p>
+        <p class="hero-desc">
+          When a product stocks out, the sales record lies. We built a two-stage
+          pipeline to recover what was actually demanded — then forecast the
+          next 7 days with LightGBM, MLP, and a weighted ensemble, matching TFT
+          accuracy at a fraction of the compute.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#architecture" class="btn-primary magnetic"
+            >Explore the System ↓</a
+          >
+          <a
+            href="https://quickcommersev2-t4vfbm9h85gbdmcvymkssq.streamlit.app/"
+            target="_blank"
+            class="btn-outline magnetic"
+            >Live Dashboard ↗</a
+          >
+          <a
+            href="https://github.com/Parth-Sidhu-4/AI-based-Hyperlocal-Demand-Prediction-for-Dark-Stores-Quick-Commerce/tree/main"
+            target="_blank"
+            class="btn-outline magnetic"
+            >GitHub ↗</a
+          >
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num shimmer">27.83%</span>
+          <span class="hero-stat-label">Stage 1 WAPE</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num shimmer">29.30%</span>
+          <span class="hero-stat-label">Stage 2 WAPE</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">50K</span>
+          <span class="hero-stat-label">Time Series</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">345</span>
+          <span class="hero-stat-label">Trees Used</span>
+        </div>
+      </div>
+
+      <div class="hero-scroll-cue">
+        <div class="scroll-line"></div>
+        <span class="scroll-label">Scroll to explore</span>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ PROBLEM ═ -->
+    <section id="problem">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-num-display">01</div>
+          <div class="section-label-row">
+            <div class="section-label-line"></div>
+            <span class="label">The Core Challenge</span>
+          </div>
+          <h2 class="section-title">Demand <span>Censoring</span></h2>
+          <p class="section-intro">
+            In quick commerce, stockout events don't just hurt today's sales —
+            they corrupt tomorrow's forecast. When a product stocks out at 11
+            AM, the system records only what was sold before the stockout, not
+            what customers actually wanted. This is the fundamental data problem
+            we solve.
+          </p>
+        </div>
+
+        <div class="problem-grid reveal">
+          <div class="problem-cell">
+            <div class="cell-icon red">📉</div>
+            <h3>Censored Sales ≠ True Demand</h3>
+            <p>
+              A dark store stocking out of fresh strawberries at 11:00 AM may
+              record <strong style="color: var(--ivory)">100 units sold</strong>
+              when genuine customer demand was
+              <strong style="color: var(--gold-pale)">200 units</strong>. The
+              "missing" 100 units are invisible — not zero demand, but censored
+              demand.
+            </p>
+            <div class="math-block">
+              <span class="mono"
+                >Observed: y<sub>t</sub> = d<sub>t</sub> × s<sub>t</sub></span
+              >
+              <small
+                >When s<sub>t</sub> = 0 (stockout), y<sub>t</sub> is truncated
+                below true demand d<sub>t</sub></small
+              >
+            </div>
+          </div>
+
+          <div class="problem-cell">
+            <div class="cell-icon gold">🔄</div>
+            <h3>The Self-Reinforcing Cycle</h3>
+            <p>
+              Models trained on censored data underestimate future demand →
+              smaller orders are placed → more stockouts occur → more censored
+              data is generated. This self-reinforcing cycle compounds over
+              time, systematically starving high-demand products of inventory.
+            </p>
+            <p
+              style="
+                margin-top: 12px;
+                color: rgba(240, 235, 226, 0.4);
+                font-size: 0.8rem;
+              "
+            >
+              The FreshRetailNet-50K dataset shows raw sales carry a
+              <strong style="color: var(--red)">−7.37% WPE</strong>
+              bias (systematic underestimation) before any recovery is applied.
+            </p>
+          </div>
+
+          <div class="problem-cell">
+            <div class="cell-icon teal">🏙️</div>
+            <h3>Dark Store Amplification</h3>
+            <p>
+              Unlike traditional retail, dark stores operate with a 3 km service
+              radius, a volatile customer base, and a product mix dominated by
+              short-shelf-life perishables: fresh produce, dairy, seafood. This
+              hyperlocal footprint amplifies both demand volatility and stockout
+              frequency.
+            </p>
+            <p
+              style="
+                margin-top: 12px;
+                color: rgba(240, 235, 226, 0.4);
+                font-size: 0.8rem;
+              "
+            >
+              30-minute delivery SLA creates acute inventory pressure. Stockout
+              rates peak at
+              <strong style="color: var(--gold-pale)">26%</strong> by 8 PM.
+            </p>
+          </div>
+
+          <div class="problem-cell">
+            <div class="cell-icon green">🚫</div>
+            <h3>Existing Benchmarks Fail</h3>
+            <p>
+              M5, Walmart, and Corporación Favorita — the three dominant public
+              retail forecasting benchmarks — provide no stockout annotations.
+              They treat zero sales as zero demand, making it impossible to
+              train or evaluate censoring-aware models. This gap is precisely
+              what FreshRetailNet-50K fills.
+            </p>
+            <p
+              style="
+                margin-top: 12px;
+                color: rgba(240, 235, 226, 0.4);
+                font-size: 0.8rem;
+              "
+            >
+              Our problem is <strong style="color: var(--ivory)">MNAR</strong>
+              (Missing Not At Random): missingness correlates with demand
+              surges, violating MAR assumptions.
+            </p>
+          </div>
+        </div>
+
+        <!-- Censoring Viz -->
+        <div class="censoring-viz reveal" style="margin-bottom: 64px">
+          <h3>True Demand vs. Observed Sales — 30 Day Example</h3>
+          <p>
+            Red shaded days are stockout events. The dashed teal line shows what
+            the system recorded; the gold line shows actual demand.
+          </p>
+          <canvas id="censoringChart"></canvas>
+          <div class="censoring-legend">
+            <div class="legend-item">
+              <div class="legend-dot true"></div>
+              True Latent Demand d<sub>t</sub>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot observed"></div>
+              Observed Censored Sales y<sub>t</sub>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot stockout"></div>
+              Stockout Days (MNAR)
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px"
+          class="reveal"
+        >
+          <div>
+            <p
+              class="label"
+              style="color: var(--gold-pale); margin-bottom: 14px"
+            >
+              Why MNAR Matters
+            </p>
+            <p
+              style="
+                color: var(--ivory-dim);
+                font-size: 0.92rem;
+                line-height: 1.85;
+              "
+            >
+              Standard imputation methods (SAITS, ImputeFormer, CSDI) assume
+              data is
+              <strong style="color: var(--ivory)"
+                >Missing At Random (MAR)</strong
+              >
+              — that the probability of missingness doesn't depend on the
+              unobserved value. But retail stockouts are fundamentally
+              <strong style="color: var(--gold-pale)"
+                >Missing Not At Random (MNAR)</strong
+              >: a product stocks out <em>because</em> demand is high. Treating
+              it as MAR systematically underestimates the true demand.
+            </p>
+          </div>
+          <div>
+            <p
+              class="label"
+              style="color: var(--teal-bright); margin-bottom: 14px"
+            >
+              Structured Censoring Mechanisms
+            </p>
+            <p
+              style="
+                color: var(--ivory-dim);
+                font-size: 0.92rem;
+                line-height: 1.85;
+              "
+            >
+              Stockouts follow structured patterns. Restocking at 6 AM reduces
+              rates below 2%, but inventory depletes monotonically, reaching
+              <strong style="color: var(--gold-pale)"
+                >26% stockout rate by 8 PM</strong
+              >. Deeper promotions paradoxically <em>increase</em> stockouts
+              (β<sub>discount</sub> = −0.046, p=0.018) by amplifying demand
+              beyond capacity. Rainfall shifts demand from outdoor to online
+              markets (β<sub>rain</sub> = +0.108). These structured dependencies
+              are the hallmark of true MNAR data.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ DATASET ═ -->
+    <section id="dataset">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-num-display">02</div>
+          <div class="section-label-row">
+            <div class="section-label-line"></div>
+            <span class="label">FreshRetailNet-50K</span>
+          </div>
+          <h2 class="section-title">The <span>Dataset</span></h2>
+          <p class="section-intro">
+            The first open benchmark for censored demand estimation in fresh
+            retail. Compiled by Dingdong Inc. from real operational data across
+            China's largest quick-commerce platform. Presented by Assir Thota.
+          </p>
+        </div>
+
+        <div class="dataset-stats-row reveal">
+          <div class="stat-card">
+            <div class="stat-card-num" data-count="50000" data-suffix="">0</div>
+            <div class="stat-card-label">Store-Product Series</div>
+            <div class="stat-card-sub">Time series pairs</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num" data-count="898" data-suffix="">0</div>
+            <div class="stat-card-label">Dark Stores</div>
+            <div class="stat-card-sub">18 Chinese cities</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num" data-count="863" data-suffix="">0</div>
+            <div class="stat-card-label">SKU Categories</div>
+            <div class="stat-card-sub">Perishable goods</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num" data-count="100" data-suffix="M+">0</div>
+            <div class="stat-card-label">Sample Records</div>
+            <div class="stat-card-sub">Hourly resolution</div>
+          </div>
+        </div>
+
+        <div class="dataset-content reveal">
+          <div class="dataset-text">
+            <h3>What makes FRN-50K unique?</h3>
+            <p>
+              The dataset spans 3 months of real operational data (March–June
+              2024) from Dingdong Inc., China's leading quick-commerce operator.
+              Every stockout event is
+              <strong style="color: var(--ivory)"
+                >verified and annotated at hourly resolution</strong
+              >
+              — not inferred from inventory gaps.
+            </p>
+            <p>
+              The <code>hours_stock_status</code> column contains a 24-element
+              binary array where
+              <strong style="color: var(--gold-pale)">1 = stockout</strong>, 0 =
+              in-stock. The derived <code>stock_hour6_22_cnt</code> counts
+              stockout hours in the 6 AM–10 PM operating window. A day is
+              classified as in-stock when this count ≤ 2.
+            </p>
+            <p>
+              This annotation granularity enables us to build the ground truth
+              needed for MNAR simulation: we mask known in-stock days at a 15%
+              rate (proportional to demand) to create synthetic censored regions
+              with verifiable ground truth.
+            </p>
+            <div style="margin-top: 24px">
+              <span class="info-tag">📍 18 Cities</span>
+              <span class="info-tag">🕐 Hourly Resolution</span>
+              <span class="info-tag">✅ Verified Stockout Labels</span>
+              <span class="info-tag teal">🥦 Vegetables</span>
+              <span class="info-tag teal">🥩 Meat &amp; Poultry</span>
+              <span class="info-tag teal">🐟 Seafood</span>
+              <span class="info-tag teal">🧀 Dairy</span>
+              <span class="info-tag teal">🧊 Frozen Goods</span>
+            </div>
+          </div>
+
+          <div class="dataset-visual">
+            <div class="mini-chart-wrap">
+              <div class="mini-chart-title">
+                Diurnal Stockout Rate (6 AM – 10 PM)
+              </div>
+              <canvas
+                id="diurnalChart"
+                class="mini-chart"
+                style="height: 180px"
+              ></canvas>
+            </div>
+            <div class="mini-chart-wrap">
+              <div class="mini-chart-title">
+                Power-Law Demand Distribution (α = 2.83)
+              </div>
+              <canvas
+                id="powerLawChart"
+                class="mini-chart"
+                style="height: 180px"
+              ></canvas>
+            </div>
+          </div>
+        </div>
+
+        <h3
+          style="
+            font-size: 2rem;
+            color: var(--ivory);
+            margin-bottom: 24px;
+            font-weight: 400;
+          "
+          class="reveal"
+        >
+          Key Statistical Properties
+        </h3>
+        <div class="dataset-properties reveal">
+          <div class="property-row">
+            <div class="prop-key">Temporal Cyclicity</div>
+            <div class="prop-val">
+              Weekdays show bimodal peaks at 09:00 (pre-lunch) and 16:00
+              (pre-dinner). Weekends feature a single amplified morning surge at
+              09:00 with ~2× weekday peak intensity, driven by household bulk
+              purchasing.
+            </div>
+          </div>
+          <div class="property-row">
+            <div class="prop-key">Power-Law Demand</div>
+            <div class="prop-val">
+              Demand follows a power-law distribution with α = 2.83 (KS p &lt;
+              0.03). The top 20% of SKUs account for 51.8% of all transactions —
+              creating a long-tail forecasting challenge where sparse SKUs
+              dominate the catalog.
+            </div>
+          </div>
+          <div class="property-row">
+            <div class="prop-key">MNAR Censoring</div>
+            <div class="prop-val">
+              Stockout rates follow a U-shaped diurnal cycle: below 2%
+              post-restock at 6 AM, rising monotonically to 26% by 8 PM.
+              Promotions increase stockout probability (β = −0.046, p = 0.018);
+              rainfall increases it further (β = +0.108, p = 0.05).
+            </div>
+          </div>
+          <div class="property-row">
+            <div class="prop-key">Promotional Effects</div>
+            <div class="prop-val">
+              Active promotions yield a median sales uplift of 1.43× (IQR:
+              1.05×–2.06×). Holiday periods carry a 1.27× demand multiplier.
+              Deeper discounts paradoxically increase stockouts by amplifying
+              demand beyond inventory capacity.
+            </div>
+          </div>
+          <div class="property-row">
+            <div class="prop-key">Weather Effects</div>
+            <div class="prop-val">
+              Rainfall increases vegetable demand by 11% via offline-to-online
+              market substitution. Temperature has category-divergent effects:
+              rising temperatures increase frozen goods stockouts (β = +0.065)
+              but decrease meat shortages (β = −0.067).
+            </div>
+          </div>
+          <div class="property-row">
+            <div class="prop-key">Hierarchy Structure</div>
+            <div class="prop-val">
+              Four-level product hierarchy (city → store → category 1 → category
+              2 → SKU) and three-level category taxonomy (863 SKUs across 5
+              major perishable categories). City-store geographic hierarchy
+              enables regional analysis.
+            </div>
+          </div>
+        </div>
+
+        <h3
+          style="
+            font-size: 1.8rem;
+            color: var(--ivory);
+            margin: 56px 0 20px;
+            font-weight: 400;
+          "
+          class="reveal"
+        >
+          Available Covariates
+        </h3>
+        <div class="dataset-covariates reveal">
+          <div class="cov-card">
+            <h4>📅 Calendar Features</h4>
+            <p>
+              Day of week, month, week-of-year, holiday flags, weekend
+              indicators. Cyclic sin/cos encodings for DOW and month to preserve
+              periodicity.
+            </p>
+          </div>
+          <div class="cov-card">
+            <h4>🏷️ Promotional Data</h4>
+            <p>
+              Discount rate ∈ [0,1], binary activity flag, promotional uplift
+              priors. Discount coefficient β = −0.046 informs stockout risk
+              features.
+            </p>
+          </div>
+          <div class="cov-card">
+            <h4>🌧️ Weather Streams</h4>
+            <p>
+              Daily precipitation (mm), mean temperature (°C), relative humidity
+              (%), wind level. Per-category interaction terms for frozen vs.
+              meat goods.
+            </p>
+          </div>
+          <div class="cov-card">
+            <h4>📦 Stock Status</h4>
+            <p>
+              Hourly 24-element binary stockout array, per-day stockout hour
+              count, in-stock flag, first stockout hour, peak-hour stockout
+              indicators.
+            </p>
+          </div>
+          <div class="cov-card">
+            <h4>🏪 Entity Features</h4>
+            <p>
+              Label-encoded city, store, management group, 3 category levels,
+              product ID. Per store-product pair mean demand μᵢ, availability
+              ratio, is-top-SKU flag.
+            </p>
+          </div>
+          <div class="cov-card">
+            <h4>📈 Lag &amp; Rolling</h4>
+            <p>
+              Sales lags at 1, 7, 14, 28 days (censored zeros masked as NaN).
+              Rolling mean, std, max over 7/14/30-day windows. DOW-expanding
+              mean.
+            </p>
+          </div>
+        </div>
+
+        <h3
+          style="
+            font-size: 2rem;
+            color: var(--ivory);
+            margin: 64px 0 24px;
+            font-weight: 400;
+          "
+          class="reveal"
+        >
+          Benchmark Comparison
+        </h3>
+        <div class="table-wrap reveal">
+          <table>
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>M5</th>
+                <th>Favorita</th>
+                <th>Walmart</th>
+                <th style="color: var(--gold-champagne)">FreshRetailNet-50K</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong style="color: var(--ivory)">Stockout Labels</strong>
+                </td>
+                <td><span class="tag-no">No</span></td>
+                <td><span class="tag-no">No</span></td>
+                <td><span class="tag-no">No</span></td>
+                <td class="td-highlight">
+                  <span class="tag-yes">Yes — Verified Hourly</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong style="color: var(--ivory)">Censoring Type</strong>
+                </td>
+                <td>None</td>
+                <td>None</td>
+                <td>None</td>
+                <td class="td-highlight">MNAR (Structured)</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong style="color: var(--ivory)">Granularity</strong>
+                </td>
+                <td>Daily</td>
+                <td>Daily</td>
+                <td>Weekly</td>
+                <td class="td-highlight">Hourly</td>
+              </tr>
+              <tr>
+                <td><strong style="color: var(--ivory)">Hierarchy</strong></td>
+                <td><span class="tag-yes">Yes</span></td>
+                <td><span class="tag-no">No</span></td>
+                <td><span class="tag-no">No</span></td>
+                <td class="td-highlight">
+                  <span class="tag-yes">Yes (Geo + Product)</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong style="color: var(--ivory)">Series Count</strong>
+                </td>
+                <td>30K</td>
+                <td>174K</td>
+                <td>3K</td>
+                <td class="td-highlight">50K</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong style="color: var(--ivory)"
+                    >Weather Covariates</strong
+                  >
+                </td>
+                <td><span class="tag-no">No</span></td>
+                <td><span class="tag-no">No</span></td>
+                <td><span class="tag-no">No</span></td>
+                <td class="td-highlight">
+                  <span class="tag-yes">Yes (Daily per store)</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong style="color: var(--ivory)">Promotional Data</strong>
+                </td>
+                <td>Partial</td>
+                <td>Partial</td>
+                <td><span class="tag-no">No</span></td>
+                <td class="td-highlight">
+                  <span class="tag-yes">Yes (Hourly Discount %)</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ ARCHITECTURE ═ -->
+    <section id="architecture">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-num-display">03</div>
+          <div class="section-label-row">
+            <div class="section-label-line"></div>
+            <span class="label">System Design</span>
+          </div>
+          <h2 class="section-title">Two-Stage <span>Pipeline</span></h2>
+          <p class="section-intro">
+            Our pipeline decouples demand recovery from demand forecasting.
+            Stage 1 imputes what was truly demanded during stockouts. Stage 2
+            uses that clean signal to build a 7-day forecast. Presented by Ayush
+            Vaibhav Gond.
+          </p>
+        </div>
+
+        <div class="pipeline-container reveal">
+          <div class="pipeline-stage stage1">
+            <div class="stage-badge"><span class="mono">Stage 1</span></div>
+            <h3 class="stage-title">Latent Demand Recovery</h3>
+            <p class="stage-subtitle">
+              Corrects historical data · Removes MNAR bias
+            </p>
+            <div class="pipeline-steps">
+              <div class="pipe-step">
+                <div class="pipe-step-num">01</div>
+                <div class="pipe-step-content">
+                  <h4>Raw Data Ingestion</h4>
+                  <p>
+                    Load FreshRetailNet-50K Parquet files. Decode hourly arrays.
+                    Flip stock_status encoding (1 = stockout). Derive
+                    <code>in_stock</code> flag (cnt ≤ 2).
+                  </p>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">02</div>
+                <div class="pipe-step-content">
+                  <h4>Feature Engineering (62 features)</h4>
+                  <p>
+                    Build 5 feature groups: Calendar (10), Promotional (5),
+                    Weather (10), Lag/Rolling (16), Entity/Hourly (21). Lag
+                    features use <code>sale_for_lag</code> — NaN on stockout
+                    days to prevent censored zero contamination.
+                  </p>
+                  <span class="mono-tag">causality rule applied</span>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">03</div>
+                <div class="pipe-step-content">
+                  <h4>MNAR Simulation</h4>
+                  <p>
+                    Synthetically mask 15% of in-stock rows (demand-proportional
+                    probability) to create censored validation regions with
+                    known ground truth. Last 20% by date → validation set.
+                  </p>
+                  <span class="mono-tag">split date: 2024-06-08</span>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">04</div>
+                <div class="pipe-step-content">
+                  <h4>LightGBM with Tweedie Objective</h4>
+                  <p>
+                    Train on 2.7M in-stock rows with power-law sample weights
+                    (wᵢ ∝ μᵢ^(1/α)). Tweedie log-link handles zero-inflated
+                    power-law demand (α = 2.83). Custom WAPE feval for early
+                    stopping.
+                  </p>
+                  <span class="mono-tag">p=1.5 · 345 trees · ES@150</span>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">05</div>
+                <div class="pipe-step-content">
+                  <h4>Post-hoc Bias Calibration</h4>
+                  <p>
+                    Compute scalar c = Σy_t / Σd̂_t on in-stock validation rows.
+                    Multiply all predictions by c. Clamp to [0.80, 1.25] for
+                    safety.
+                  </p>
+                  <span class="mono-tag">c = 1.0748 (LightGBM)</span>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">06</div>
+                <div class="pipe-step-content">
+                  <h4>Demand Reconstruction</h4>
+                  <p>
+                    Apply recovery formula: d_t = y_t · s_t + d̂_t · (1 − s_t).
+                    In-stock days retain observed sales; stockout days receive
+                    model-imputed demand with mean 1.33× uplift.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-arrow">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+            <span
+              style="
+                font-family: var(--font-ui);
+                font-size: 0.58rem;
+                letter-spacing: 0.12em;
+                text-align: center;
+                writing-mode: vertical-rl;
+                font-weight: 700;
+                color: var(--gold);
+              "
+              >RECOVERED DEMAND D<sub>t</sub></span
+            >
+          </div>
+
+          <div class="pipeline-stage">
+            <div class="stage-badge"><span class="mono">Stage 2</span></div>
+            <h3 class="stage-title">7-Day Demand Forecasting</h3>
+            <p class="stage-subtitle">
+              Trains on clean signal · Outputs actionable forecasts
+            </p>
+            <div class="pipeline-steps">
+              <div class="pipe-step">
+                <div class="pipe-step-num">01</div>
+                <div class="pipe-step-content">
+                  <h4>Recovered Demand as Input</h4>
+                  <p>
+                    Daily aggregated recovered demand D_t = Σ d_τ (τ ∈ 24k to
+                    24(k+1)) replaces raw censored sales. This clean signal is
+                    the primary input feature for all Stage 2 models.
+                  </p>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">02</div>
+                <div class="pipe-step-content">
+                  <h4>Feature Engineering (64 features)</h4>
+                  <p>
+                    Extends Stage 1 features with recovered demand lags, 7
+                    horizon index features, and future-known covariates
+                    (promotional schedules, weather forecasts, calendar events).
+                  </p>
+                  <span class="mono-tag"
+                    >no leakage — entity stats from train split only</span
+                  >
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">03</div>
+                <div class="pipe-step-content">
+                  <h4>Three Forecasting Models</h4>
+                  <p>
+                    SSA (statistical baseline), per-horizon LightGBM (7 models,
+                    one per day), and Tabular MLP (256→128→1, Softplus, Huber
+                    loss). Each provides a different inductive bias.
+                  </p>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">04</div>
+                <div class="pipe-step-content">
+                  <h4>Weighted Ensemble</h4>
+                  <p>
+                    Grid search for optimal per-horizon LGB weight w*ₕ
+                    minimizing WAPE on in-stock test rows. LGB-dominant
+                    (0.75–1.00). MLP contributes bias correction at h=1–3.
+                  </p>
+                  <span class="mono-tag">h=7: w*=1.00 (pure LGB)</span>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">05</div>
+                <div class="pipe-step-content">
+                  <h4>Per-Horizon Bias Calibration</h4>
+                  <p>
+                    Separate calibration factor cₕ per forecast day accounts for
+                    increasing underestimation as lag features become stale.
+                    Largest correction at h=6 (cₕ = 1.109).
+                  </p>
+                  <span class="mono-tag">c_h ∈ [1.052, 1.109]</span>
+                </div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-step-num">06</div>
+                <div class="pipe-step-content">
+                  <h4>7-Day Forecast Output</h4>
+                  <p>
+                    Final calibrated ensemble forecasts ens_h1 through ens_h7
+                    power all dashboard modules: demand overview, stockout
+                    countdown, smart replenishment list.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-equations reveal">
+          <div class="eq-card">
+            <div class="eq-label">Eq. 1 — Censoring Mechanism</div>
+            <div class="eq-formula">
+              sₜ = 1 if iₜ > 0 (in-stock) sₜ = 0 if iₜ = 0 (stockout)
+            </div>
+            <p>
+              Binary stock status indicator derived from hourly stockout count.
+              A day is in-stock if stock_hour6_22_cnt ≤ 2 (at most 2 stockout
+              hours in operating window).
+            </p>
+          </div>
+          <div class="eq-card">
+            <div class="eq-label">Eq. 2 — Demand Recovery</div>
+            <div class="eq-formula">dₜ = yₜ ⊙ sₜ + d̂ₜ ⊙ (1 − sₜ)</div>
+            <p>
+              Element-wise combination. Observed sales on in-stock days;
+              model-imputed demand on stockout days. The imputed d̂ₜ averages
+              1.33× the censored floor.
+            </p>
+          </div>
+          <div class="eq-card">
+            <div class="eq-label">Eq. 3 — Bias Calibration</div>
+            <div class="eq-formula">
+              c = Σ yₜ / Σ d̂ₜ (over in-stock rows) c ∈ [0.80, 1.25]
+            </div>
+            <p>
+              Post-hoc scalar calibration analogous to Platt scaling. Stage 2
+              uses per-horizon cₕ to correct horizon-varying bias.
+            </p>
+          </div>
+          <div class="eq-card">
+            <div class="eq-label">Eq. 4 — WAPE Metric</div>
+            <div class="eq-formula">WAPE = Σ|dₜ − yₜ| / Σ yₜ</div>
+            <p>
+              Weighted Absolute Percentage Error. Demand-weighted, so
+              high-volume SKUs dominate. More stable than MAPE on zero-inflated
+              data. Primary Stage 1 early-stopping metric.
+            </p>
+          </div>
+          <div class="eq-card">
+            <div class="eq-label">Eq. 5 — WPE (Bias)</div>
+            <div class="eq-formula">
+              WPE = Σ(dₜ − yₜ) / Σ yₜ Positive = overestimate Negative =
+              underestimate
+            </div>
+            <p>
+              Weighted Percentage Error. Tracks systematic bias direction.
+              Target: |WPE| &lt; 3%. All Stage 2 models show negative WPE
+              without calibration.
+            </p>
+          </div>
+          <div class="eq-card">
+            <div class="eq-label">Eq. 6 — Decoupling Score ρ_DS</div>
+            <div class="eq-formula">
+              ρ_DS = Σᵢ wᵢ · Pearson(SRᵢ, dᵢ) wᵢ = μᵢ / Σⱼ μⱼ
+            </div>
+            <p>
+              Demand-Supply Decoupling Score. Weighted Pearson across all
+              store-product pairs between stockout ratio and recovered demand
+              mean. Target: near zero. Our result: +0.46.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ STAGE 1 ═ -->
+    <section id="stage1">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-num-display">04</div>
+          <div class="section-label-row">
+            <div class="section-label-line"></div>
+            <span class="label">Stage 1 — Deep Dive</span>
+          </div>
+          <h2 class="section-title">Latent Demand <span>Recovery</span></h2>
+          <p class="section-intro">
+            Three candidate models share identical feature engineering and
+            evaluation protocol. The key differentiator: loss function design.
+            Presented by Parth Sidhu &amp; Srijan Gupta.
+          </p>
+        </div>
+
+        <h3
+          style="
+            font-size: 1.8rem;
+            color: var(--ivory);
+            margin-bottom: 24px;
+            font-weight: 400;
+          "
+          class="reveal"
+        >
+          Feature Engineering — 62 Features Across 5 Groups
+        </h3>
+        <div class="feature-groups reveal">
+          <div class="feat-group">
+            <div class="feat-group-icon">📅</div>
+            <h4>Calendar</h4>
+            <div class="feat-count">10 features</div>
+            <ul>
+              <li>Day of week (DOW)</li>
+              <li>Month, week-of-year</li>
+              <li>Day of month</li>
+              <li>Holiday flag</li>
+              <li>Is-weekend flag</li>
+              <li>Cyclic sin(DOW)</li>
+              <li>Cyclic cos(DOW)</li>
+              <li>Cyclic sin(month)</li>
+              <li>Cyclic cos(month)</li>
+            </ul>
+          </div>
+          <div class="feat-group">
+            <div class="feat-group-icon">🏷️</div>
+            <h4>Promotional</h4>
+            <div class="feat-count">5 features</div>
+            <ul>
+              <li>Discount rate</li>
+              <li>Activity flag</li>
+              <li>Promo uplift prior</li>
+              <li>Discount² (nonlinear)</li>
+              <li>Discount × SO risk</li>
+            </ul>
+          </div>
+          <div class="feat-group">
+            <div class="feat-group-icon">🌧️</div>
+            <h4>Weather</h4>
+            <div class="feat-count">10 features</div>
+            <ul>
+              <li>Precipitation (mm)</li>
+              <li>Temperature (°C)</li>
+              <li>Humidity (%)</li>
+              <li>Wind level</li>
+              <li>Rain demand effect</li>
+              <li>Rain stockout risk</li>
+              <li>Is-rainy (&gt;5mm)</li>
+              <li>Temp × frozen</li>
+              <li>Temp × meat</li>
+            </ul>
+          </div>
+          <div class="feat-group">
+            <div class="feat-group-icon">📈</div>
+            <h4>Lag &amp; Rolling</h4>
+            <div class="feat-count">16 features</div>
+            <ul>
+              <li>Lag 1, 7, 14, 28 days</li>
+              <li>Rolling mean 7d</li>
+              <li>Rolling mean 14d</li>
+              <li>Rolling mean 30d</li>
+              <li>Rolling std 7d</li>
+              <li>Rolling max 7d</li>
+              <li>DOW expanding mean</li>
+            </ul>
+          </div>
+          <div class="feat-group">
+            <div class="feat-group-icon">🏪</div>
+            <h4>Entity &amp; Hourly</h4>
+            <div class="feat-count">21 features</div>
+            <ul>
+              <li>City, store (encoded)</li>
+              <li>3 category levels</li>
+              <li>Product ID</li>
+              <li>Pair mean μᵢ</li>
+              <li>Availability ratio</li>
+              <li>Demand uplift prior</li>
+              <li>Is-top-SKU flag</li>
+              <li>in_stock_lag1</li>
+              <li>so_frac_lag1</li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="math-block reveal"
+          style="
+            background: rgba(25, 192, 186, 0.05);
+            border-left-color: var(--teal-bright);
+            margin-bottom: 56px;
+          "
+        >
+          <span class="mono" style="color: var(--teal-bright)"
+            >Causality Rule (Critical Design Decision)</span
+          >
+          <p
+            style="
+              color: var(--ivory-dim);
+              font-size: 0.9rem;
+              margin-top: 10px;
+              line-height: 1.8;
+            "
+          >
+            Supply-side features from <code>hours_stock_status</code> are safe
+            for the current day — supply status is observable before demand is
+            realized. Demand-side features from <code>hours_sale</code> must be
+            shifted by <strong style="color: var(--ivory)">one day</strong> to
+            prevent data leakage. Using today's sales pattern as a predictor for
+            today's demand constitutes causality inversion.
+          </p>
+        </div>
+
+        <h3
+          style="
+            font-size: 1.8rem;
+            color: var(--ivory);
+            margin-bottom: 24px;
+            font-weight: 400;
+          "
+          class="reveal"
+        >
+          Three Stage 1 Models
+        </h3>
+        <div class="models-compare reveal">
+          <div class="model-card">
+            <div class="model-header">
+              <div>
+                <div class="model-name">Random Forest</div>
+                <div class="model-type">Non-boosted Ensemble Baseline</div>
+              </div>
+              <div class="model-wape">
+                <div class="wape-num">28.50%</div>
+                <div class="wape-label">WAPE</div>
+              </div>
+            </div>
+            <p class="model-desc">
+              sklearn <code>RandomForestRegressor</code> evaluated as a
+              non-boosted baseline. Uses 500 trees with bagging and out-of-bag
+              error estimation. Since RF has no native Tweedie objective, the
+              power-law demand distribution (α = 2.83) is addressed through
+              power-law sample weights passed to <code>fit()</code>.
+            </p>
+            <p class="model-desc" style="color: rgba(240, 235, 226, 0.4)">
+              <strong style="color: rgba(240, 235, 226, 0.65)"
+                >Why it's weakest:</strong
+              >
+              Without a log-link loss function, RF cannot inherently model the
+              power-law demand distribution. Higher memory overhead due to
+              storing 500 full decision trees.
+            </p>
+            <div class="model-params">
+              <div class="param-row">
+                <span class="param-key">n_estimators</span
+                ><span class="param-val">500</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">max_features</span
+                ><span class="param-val">'sqrt'</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">objective</span
+                ><span class="param-val">MSE + PLW</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">WPE (calib)</span
+                ><span class="param-val">+0.00%</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">ρ_DS</span
+                ><span class="param-val">+0.46</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="model-card">
+            <div class="model-header">
+              <div>
+                <div class="model-name">XGBoost</div>
+                <div class="model-type">Tweedie Gradient Boosting</div>
+              </div>
+              <div class="model-wape">
+                <div class="wape-num">28.52%</div>
+                <div class="wape-label">WAPE</div>
+              </div>
+            </div>
+            <p class="model-desc">
+              Implemented as a direct port of the LightGBM pipeline using
+              <code>reg:tweedie</code> with variance power 1.5. The
+              histogram-based <code>tree_method='hist'</code> with
+              <code>grow_policy='lossguide'</code> replicates LightGBM's
+              leaf-wise tree growth.
+            </p>
+            <p class="model-desc" style="color: rgba(240, 235, 226, 0.4)">
+              <strong style="color: rgba(240, 235, 226, 0.65)"
+                >Why not selected:</strong
+              >
+              Comparable WAPE to LightGBM, but higher training time due to
+              slower histogram construction on the 2.7M-row training set.
+            </p>
+            <div class="model-params">
+              <div class="param-row">
+                <span class="param-key">objective</span
+                ><span class="param-val">reg:tweedie</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">variance_power</span
+                ><span class="param-val">1.5</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">n_estimators</span
+                ><span class="param-val">4000 (ES@150)</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">WPE (calib)</span
+                ><span class="param-val">+0.00%</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">ρ_DS</span
+                ><span class="param-val">+0.46</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="model-card winner">
+            <div class="model-header">
+              <div>
+                <div class="model-name">LightGBM</div>
+                <div class="model-type">Tweedie · Leaf-wise Growth</div>
+              </div>
+              <div class="model-wape">
+                <div class="wape-num shimmer" style="font-size: 2rem">
+                  27.83%
+                </div>
+                <div class="wape-label">WAPE</div>
+              </div>
+            </div>
+            <p class="model-desc">
+              LightGBM with a Tweedie objective (variance power 1.5) — the
+              primary selected model. The Tweedie distribution sits between
+              Poisson (p=1) and Gamma (p=2), perfectly matching the compound
+              distribution of retail demand: zero-inflated, heavy-tailed, with
+              power-law exponent α = 2.83.
+            </p>
+            <p class="model-desc" style="color: rgba(240, 235, 226, 0.4)">
+              <strong style="color: rgba(240, 235, 226, 0.65)"
+                >Critical note:</strong
+              >
+              <code>metric='None'</code> disables the built-in Tweedie
+              log-likelihood metric — a custom WAPE feval callback drives early
+              stopping instead, stable on small MNAR validation samples.
+            </p>
+            <div class="model-params">
+              <div class="param-row">
+                <span class="param-key">objective</span
+                ><span class="param-val">tweedie</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">variance_power</span
+                ><span class="param-val">1.5</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">trees used</span
+                ><span class="param-val">345 (ES@150)</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">calib factor</span
+                ><span class="param-val">1.0748</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">WPE (calib)</span
+                ><span class="param-val">+0.00%</span>
+              </div>
+              <div class="param-row">
+                <span class="param-key">ρ_DS</span
+                ><span class="param-val">+0.46</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mnar-box reveal">
+          <div>
+            <h3>Why the Tweedie Objective?</h3>
+            <p>
+              The Tweedie distribution is an exponential family distribution
+              particularly suited to zero-inflated, right-skewed, power-law
+              data. The variance function is <code>Var(Y) ∝ E[Y]^p</code>, where
+              p is the variance power. For p=1 (Poisson), variance equals mean.
+              For p=2 (Gamma), variance is proportional to mean squared. We use
+              p=1.5, placing us between these — matching the compound
+              Poisson-Gamma structure of retail demand.
+            </p>
+            <p>
+              The log-link function means the model predicts in log-space,
+              ensuring non-negative outputs without explicit constraints. This
+              is critical for demand data where the distribution spans 3 orders
+              of magnitude and negative predictions are inadmissible.
+            </p>
+            <p>
+              Random Forest, lacking this objective, must rely entirely on
+              sample reweighting — which partially compensates but cannot
+              replicate log-space optimization. This explains the 0.67 pp WAPE
+              gap between RF (28.50%) and LightGBM (27.83%).
+            </p>
+          </div>
+          <div>
+            <div class="calibration-formula">
+              Tweedie Log-Likelihood<br /><br />
+              L = −y · exp(−ρ(1−p)·θ) / (1−p)<br />
+              &nbsp;&nbsp;&nbsp;+ exp(ρ(2−p)·θ) / (2−p)<br /><br />
+              where θ = log(μ) [log-link]<br />
+              p = 1.5 [variance power]<br /><br />
+              Variance: Var(Y) ∝ μ^1.5
+            </div>
+            <div style="margin-top: 20px">
+              <div class="calibration-formula" style="font-size: 0.82rem">
+                Power-Law Sample Weights:<br /><br />
+                wᵢ ∝ μᵢ^(1/α)&nbsp;&nbsp;[α = 2.83]<br />
+                Clamped to [0.1, 10]<br />
+                Normalized to unit mean<br /><br />
+                Up-weights high-demand pairs
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 56px" class="reveal">
+          <h3
+            style="
+              color: var(--ivory);
+              font-size: 1.8rem;
+              margin-bottom: 14px;
+              font-weight: 400;
+            "
+          >
+            Stage 1 Diagnostic Panel
+          </h3>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              margin-top: 24px;
+            "
+          >
+            <div class="plot-card">
+              <img
+                src="results/stage1/plots/stage1_diagnostics_v5.png"
+                alt="Stage 1 Diagnostics Plot"
+                class="plot-image"
+              />
+              <p class="plot-caption">
+                Predicted vs actual scatter, residual distribution, feature
+                importance, weekly recovery pattern, ρ_DS scatter.<br />
+                <strong>WAPE:</strong> 27.83% &nbsp;|&nbsp;
+                <strong>WPE:</strong> +0.00%
+              </p>
+            </div>
+            <div class="plot-card">
+              <img
+                src="./results/stage1/plots/stage1_recovery_visualization.png"
+                alt="Stage 1 Recovery Visualization"
+                class="plot-image"
+              />
+              <p class="plot-caption">
+                Time series recovery for a representative store-product pair
+                (April–June 2024). Observed vs recovered demand with stockout
+                shading.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ STAGE 2 ═ -->
+    <section id="stage2">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-num-display">05</div>
+          <div class="section-label-row">
+            <div class="section-label-line"></div>
+            <span class="label">Stage 2 — Deep Dive</span>
+          </div>
+          <h2 class="section-title">7-Day Demand <span>Forecasting</span></h2>
+          <p class="section-intro">
+            Three forecasting paradigms — statistical baseline, gradient
+            boosting, and neural network — trained on all 50,000 store-product
+            pairs using the clean Stage 1 recovered demand signal. Presented by
+            Parth Sidhu &amp; Srijan Gupta.
+          </p>
+        </div>
+
+        <div class="stage2-models reveal">
+          <div class="s2-model-row">
+            <div class="s2-model-label">
+              <h3>SSA</h3>
+              <div class="s2-type">Statistical Baseline</div>
+            </div>
+            <div class="s2-model-body">
+              <p>
+                <strong style="color: var(--ivory)"
+                  >Similar Scenario Average</strong
+                >
+                — a three-level fallback lookup over historical in-stock days.
+                Forecasts demand at horizon h by averaging historical recovered
+                demand conditioned on matching (store, SKU, day-of-week)
+                triplets. Falls back to (SKU, DOW) if the triplet has too few
+                observations, then to (store, SKU) average as a final fallback.
+              </p>
+              <p>
+                SSA's 39.94% WAPE and −11.78% WPE establish the baseline
+                difficulty of the forecasting task. The significant negative WPE
+                indicates systematic underestimation even on a historical
+                average — high-demand days are more likely to stockout and thus
+                excluded from the average.
+              </p>
+              <span class="formula-inline"
+                >D̂ᴿᵀᴴ = D̄[store,sku,dow] → D̄[sku,dow] → D̄[store,sku]</span
+              >
+            </div>
+            <div class="s2-model-metrics">
+              <div class="metric-badge">
+                <span class="m-key">WAPE</span><span class="m-val">39.94%</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">WPE</span><span class="m-val">−11.78%</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">Training</span
+                ><span class="m-val">None</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="s2-model-row">
+            <div class="s2-model-label">
+              <h3>LightGBM</h3>
+              <div class="s2-type">Multi-Horizon Gradient Boosting</div>
+            </div>
+            <div class="s2-model-body">
+              <p>
+                <strong style="color: var(--ivory)"
+                  >Seven independent LightGBM models</strong
+                >, one per forecast horizon (h=1 through h=7). A direct
+                multi-step strategy that stacks all seven horizons with the
+                horizon index h as a feature. This avoids the recursive error
+                accumulation problem of autoregressive forecasting.
+              </p>
+              <p>
+                The dominant Stage 2 feature by gain is
+                <strong style="color: var(--gold-pale)">Column_37</strong>
+                (recovered demand lag from Stage 1) — confirming that the Stage
+                1 clean signal provides the primary predictive information and
+                justifying the two-stage design.
+              </p>
+              <span class="formula-inline"
+                >D̂ₜ₊ₕ = LGB(D_{t-H:t}, P, W, C, h) for h ∈ {1,...,7}</span
+              >
+            </div>
+            <div class="s2-model-metrics">
+              <div class="metric-badge">
+                <span class="m-key">WAPE (mean)</span
+                ><span class="m-val">29.36%</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">WPE (mean)</span
+                ><span class="m-val">−7.81%</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">Best iter (h=1)</span
+                ><span class="m-val">2699</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">Calib factor</span
+                ><span class="m-val">1.0087</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="s2-model-row">
+            <div class="s2-model-label">
+              <h3>MLP</h3>
+              <div class="s2-type">Tabular Neural Network</div>
+            </div>
+            <div class="s2-model-body">
+              <p>
+                <strong style="color: var(--ivory)"
+                  >A shallow fully-connected network</strong
+                >
+                taking the same 64-dimensional tabular feature vector as
+                LightGBM. Architecture: BatchNorm → Linear(64→256) → ReLU →
+                Dropout(0.2) → Linear(256→128) → ReLU → Dropout(0.2) →
+                Linear(128→1) → Softplus.
+              </p>
+              <p>
+                The
+                <strong style="color: var(--teal-bright)"
+                  >Softplus activation</strong
+                >
+                at the output ensures strictly positive predictions while
+                providing smooth, continuous gradients — unlike ReLU which has a
+                hard zero cutoff. This yields the
+                <strong style="color: var(--ivory)"
+                  >lowest systematic bias</strong
+                >
+                among all Stage 2 models (−5.86% WPE) without explicit
+                calibration.
+              </p>
+              <span class="formula-inline"
+                >D̂ = Softplus(W₂ · ReLU(W₁ · BN(x))) hidden: 256→128</span
+              >
+            </div>
+            <div class="s2-model-metrics">
+              <div class="metric-badge">
+                <span class="m-key">WAPE (mean)</span
+                ><span class="m-val">30.69%</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">WPE (mean)</span
+                ><span class="m-val">−5.86%</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">Best epoch</span
+                ><span class="m-val">12 / 20</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">Val Huber Loss</span
+                ><span class="m-val">0.0546</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="s2-model-row"
+            style="border-color: rgba(191, 155, 48, 0.35)"
+          >
+            <div
+              class="s2-model-label"
+              style="border-top: 2px solid var(--gold)"
+            >
+              <h3 style="color: var(--gold-pale)">Ensemble</h3>
+              <div class="s2-type">Weighted LGB + MLP</div>
+            </div>
+            <div
+              class="s2-model-body"
+              style="border-top: 2px solid var(--gold)"
+            >
+              <p>
+                <strong style="color: var(--ivory)"
+                  >Per-horizon weighted combination</strong
+                >
+                of LightGBM and MLP predictions. The optimal weight w*ₕ is
+                determined per forecast day by grid search on in-stock test rows
+                minimizing WAPE. LightGBM is dominant throughout (w* ∈ [0.75,
+                1.00]), but MLP contributes meaningful correction at near
+                horizons (h=1–3).
+              </p>
+              <p>
+                At h=7, the ensemble weight collapses to w*=1.00 (pure
+                LightGBM). Per-horizon calibration factors cₕ ∈ [1.052, 1.109]
+                are applied after ensemble blending. The largest correction (cₕ
+                = 1.109) occurs at h=6, where lag features are most stale.
+              </p>
+              <span class="formula-inline"
+                >D̂ᴱᴺˢₜ₊ₕ = wₕ · D̂ᴸᴳᴮₜ₊ₕ + (1−wₕ) · D̂ᴹᴸᴾₜ₊ₕ → × cₕ</span
+              >
+            </div>
+            <div
+              class="s2-model-metrics"
+              style="border-top: 2px solid var(--gold)"
+            >
+              <div
+                class="metric-badge"
+                style="border-left-color: var(--gold-bright)"
+              >
+                <span class="m-key">WAPE (mean)</span
+                ><span class="m-val shimmer">29.30%</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">WPE (mean)</span
+                ><span class="m-val">−7.35%</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">w* range</span
+                ><span class="m-val">0.75–1.00</span>
+              </div>
+              <div class="metric-badge">
+                <span class="m-key">cₕ range</span
+                ><span class="m-val">1.052–1.109</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3
+          style="
+            color: var(--ivory);
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            font-weight: 400;
+          "
+          class="reveal"
+        >
+          Per-Horizon Results (h = 1 to 7)
+        </h3>
+        <div class="horizon-grid reveal">
+          <div class="h-cell">
+            <div class="h-cell-day">Day 1</div>
+            <div class="h-cell-wape">28.09%</div>
+            <div class="h-cell-weight">w*=0.80</div>
+            <div class="h-bar" style="width: 85%"></div>
+          </div>
+          <div class="h-cell">
+            <div class="h-cell-day">Day 2</div>
+            <div class="h-cell-wape">28.49%</div>
+            <div class="h-cell-weight">w*=0.80</div>
+            <div class="h-bar" style="width: 82%"></div>
+          </div>
+          <div class="h-cell">
+            <div class="h-cell-day">Day 3</div>
+            <div class="h-cell-wape">29.15%</div>
+            <div class="h-cell-weight">w*=0.75</div>
+            <div class="h-bar" style="width: 77%"></div>
+          </div>
+          <div class="h-cell">
+            <div class="h-cell-day">Day 4</div>
+            <div class="h-cell-wape">29.24%</div>
+            <div class="h-cell-weight">w*=0.90</div>
+            <div class="h-bar" style="width: 74%"></div>
+          </div>
+          <div class="h-cell">
+            <div class="h-cell-day">Day 5</div>
+            <div class="h-cell-wape">29.88%</div>
+            <div class="h-cell-weight">w*=0.90</div>
+            <div class="h-bar" style="width: 68%"></div>
+          </div>
+          <div class="h-cell">
+            <div class="h-cell-day">Day 6</div>
+            <div class="h-cell-wape">30.20%</div>
+            <div class="h-cell-weight">w*=0.75</div>
+            <div class="h-bar" style="width: 63%"></div>
+          </div>
+          <div class="h-cell" style="border-color: rgba(191, 155, 48, 0.4)">
+            <div class="h-cell-day">Day 7</div>
+            <div class="h-cell-wape">30.05%</div>
+            <div class="h-cell-weight">Pure LGB</div>
+            <div class="h-bar" style="width: 65%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 2 Diagnostic Panel -->
+    <section class="stage-container">
+      <h2 class="stage-heading">Stage II Diagnostic Panel</h2>
+      <div class="plot-card stage2-card">
+        <img
+          src="./results/stage2/plots/stage2_diagnostics.png"
+          alt="Stage 2 Diagnostics"
+          class="plot-image stage2-image"
+        />
+        <p class="plot-caption">
+          WAPE trends, bias (WPE), MLP training curve, feature importance, and
+          model comparison across horizons.<br />
+          <strong>Best:</strong> Ensemble (~29.30% mean WAPE)
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ RESULTS ═ -->
+    <section id="results">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-num-display">06</div>
+          <div class="section-label-row">
+            <div class="section-label-line"></div>
+            <span class="label">Evaluation &amp; Analysis</span>
+          </div>
+          <h2 class="section-title">Results &amp; <span>Analysis</span></h2>
+          <p class="section-intro">
+            Full-data evaluation on 50,000 store-product pairs against paper
+            benchmarks. Our lightweight models match or exceed deep learning
+            approaches at a fraction of the compute. Presented by Parth Sidhu
+            &amp; Srijan Gupta.
+          </p>
+        </div>
+
+        <div class="results-grid reveal">
+          <div class="results-panel">
+            <h3>Stage 1 — WAPE Comparison</h3>
+            <p class="panel-sub">
+              Lower is better. Our LightGBM matches TimesNet at 27.83% vs
+              27.62%.
+            </p>
+            <canvas id="s1ResultsChart"></canvas>
+          </div>
+          <div class="results-panel">
+            <h3>Stage 2 — WAPE by Horizon</h3>
+            <p class="panel-sub">
+              Ensemble tracks LightGBM closely with 29.30% mean WAPE across
+              h=1–7.
+            </p>
+            <canvas id="s2ResultsChart"></canvas>
+          </div>
+        </div>
+
+        <div class="model-leaderboard reveal">
+          <h3>Stage 1 — Full Leaderboard</h3>
+          <p>
+            Evaluated on synthetically masked in-stock rows (15% MNAR rate).
+            Last 20% by date as validation set.
+          </p>
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th class="bar-cell">WAPE</th>
+                <th>WPE</th>
+                <th>ρ_DS</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rank-badge rank-1">1</span></td>
+                <td>
+                  <strong style="color: var(--ivory)">LightGBM (ours)</strong>
+                </td>
+                <td>Gradient Boost</td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div class="wape-bar" style="width: 120px"></div>
+                    <span class="wape-val">27.83%</span>
+                  </div>
+                </td>
+                <td style="color: #5cca8a">+0.00%</td>
+                <td>+0.46</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  345 trees · calib 1.0748
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-2">2</span></td>
+                <td>TimesNet (paper)</td>
+                <td>Deep Learning</td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div class="wape-bar dim" style="width: 116px"></div>
+                    <span class="wape-val">27.62%</span>
+                  </div>
+                </td>
+                <td>+1.43%</td>
+                <td>+0.07</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  Paper benchmark
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-3">3</span></td>
+                <td>
+                  <strong style="color: var(--ivory)"
+                    >Random Forest (ours)</strong
+                  >
+                </td>
+                <td>Ensemble</td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div
+                      class="wape-bar"
+                      style="width: 128px; opacity: 0.6"
+                    ></div>
+                    <span class="wape-val">28.50%</span>
+                  </div>
+                </td>
+                <td style="color: #5cca8a">+0.00%</td>
+                <td>+0.46</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  500 trees · PLW
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-4">4</span></td>
+                <td>
+                  <strong style="color: var(--ivory)">XGBoost (ours)</strong>
+                </td>
+                <td>Gradient Boost</td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div
+                      class="wape-bar"
+                      style="width: 129px; opacity: 0.6"
+                    ></div>
+                    <span class="wape-val">28.52%</span>
+                  </div>
+                </td>
+                <td style="color: #5cca8a">+0.00%</td>
+                <td>+0.46</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  DMatrix · Tweedie
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-4">5</span></td>
+                <td>DLinear (paper)</td>
+                <td>Linear Decomp.</td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div class="wape-bar dim" style="width: 150px"></div>
+                    <span class="wape-val">29.99%</span>
+                  </div>
+                </td>
+                <td>−1.28%</td>
+                <td>−0.16</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  Paper benchmark
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-5">6</span></td>
+                <td>ImputeFormer (paper)</td>
+                <td>Transformer</td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div class="wape-bar dim" style="width: 196px"></div>
+                    <span class="wape-val">35.65%</span>
+                  </div>
+                </td>
+                <td>−2.62%</td>
+                <td>−0.26</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  Paper benchmark
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 56px" class="reveal">
+          <h3
+            style="
+              color: var(--ivory);
+              font-size: 2rem;
+              margin-bottom: 12px;
+              font-weight: 400;
+            "
+          >
+            Stage 2 — Overall Forecasting Performance
+          </h3>
+          <p
+            style="
+              color: var(--ivory-dim);
+              font-size: 0.88rem;
+              margin-bottom: 28px;
+            "
+          >
+            Trained on full 4.5M-row dataset (50K pairs). Evaluated on in-stock
+            rows of held-out test set (2024-06-12 to 2024-06-25).
+          </p>
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Model</th>
+                <th class="bar-cell">Mean WAPE (h=1–7)</th>
+                <th>Mean WPE</th>
+                <th>vs. TFT</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="rank-badge rank-1">★</span></td>
+                <td>
+                  <strong style="color: var(--ivory)">Ensemble (ours)</strong>
+                </td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div class="wape-bar" style="width: 155px"></div>
+                    <span class="wape-val">29.30%</span>
+                  </div>
+                </td>
+                <td>−7.35%</td>
+                <td style="color: var(--teal-bright); font-size: 0.8rem">
+                  ≈ competitive
+                </td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  Weighted LGB+MLP, cₕ
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-2">2</span></td>
+                <td>TFT (paper)</td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div class="wape-bar dim" style="width: 152px"></div>
+                    <span class="wape-val">29.02%</span>
+                  </div>
+                </td>
+                <td>+2.58%</td>
+                <td>—</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  Temporal Fusion Transformer
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-3">3</span></td>
+                <td>
+                  <strong style="color: var(--ivory)">LightGBM (ours)</strong>
+                </td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div
+                      class="wape-bar"
+                      style="width: 158px; opacity: 0.7"
+                    ></div>
+                    <span class="wape-val">29.36%</span>
+                  </div>
+                </td>
+                <td>−7.81%</td>
+                <td style="color: var(--teal-bright); font-size: 0.8rem">
+                  ≈ competitive
+                </td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  7 per-horizon models
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-4">4</span></td>
+                <td><strong style="color: var(--ivory)">MLP (ours)</strong></td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div
+                      class="wape-bar"
+                      style="width: 168px; opacity: 0.5"
+                    ></div>
+                    <span class="wape-val">30.69%</span>
+                  </div>
+                </td>
+                <td style="color: #5cca8a">−5.86%</td>
+                <td>−1.67pp</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  Lowest bias of all models
+                </td>
+              </tr>
+              <tr>
+                <td><span class="rank-badge rank-5">5</span></td>
+                <td><strong style="color: var(--ivory)">SSA (ours)</strong></td>
+                <td>
+                  <div class="wape-bar-wrap">
+                    <div class="wape-bar dim" style="width: 236px"></div>
+                    <span class="wape-val">39.94%</span>
+                  </div>
+                </td>
+                <td>−11.78%</td>
+                <td>−10.92pp</td>
+                <td style="font-size: 0.76rem; color: var(--ivory-dim)">
+                  Statistical baseline
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="insight-boxes reveal">
+          <div class="insight-box">
+            <div class="insight-num">27.83%</div>
+            <h4>LightGBM Matches Deep Learning</h4>
+            <p>
+              Our LightGBM Stage 1 achieves 27.83% WAPE — essentially matching
+              TimesNet (27.62%) using just 345 trees in ~0.8 minutes, no GPU
+              required. Architecture is far less important than the right loss
+              function.
+            </p>
+          </div>
+          <div class="insight-box">
+            <div class="insight-num">1.0748</div>
+            <h4>Calibration Drives WPE to Zero</h4>
+            <p>
+              A single scalar calibration factor of 1.0748 reduces Stage 1 WPE
+              from −7.37% (raw sales) to +0.00%. This model-agnostic post-hoc
+              correction is more effective than architecture changes.
+            </p>
+          </div>
+          <div class="insight-box">
+            <div class="insight-num">+0.46</div>
+            <h4>Residual ρ_DS — The Gap</h4>
+            <p>
+              Our ρ_DS of +0.46 vs TimesNet's +0.07 indicates residual
+              supply-demand correlation. The path forward: adversarial
+              demand-supply decoupling in Stage 1.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ DASHBOARD ═ -->
+    <section id="dashboard">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-num-display">07</div>
+          <div class="section-label-row">
+            <div class="section-label-line"></div>
+            <span class="label">Operational System</span>
+          </div>
+          <h2 class="section-title">Live <span>Dashboard</span></h2>
+          <p class="section-intro">
+            A six-module interactive web dashboard translates pipeline outputs
+            into actionable inventory decisions for dark store managers. Built
+            and presented by Shreya Mohanty.
+          </p>
+        </div>
+
+        <div class="dashboard-hero reveal">
+          <div class="dashboard-cta-area">
+            <h3>From Pipeline to Operations</h3>
+            <p>
+              The dashboard connects Stage 1 recovered demand and Stage 2
+              ensemble forecasts (ens_h1 through ens_h7) to six operational
+              modules. Real-time scenario testing, stockout risk stratification,
+              and AI-powered replenishment ordering — all in one interface.
+            </p>
+            <p style="font-size: 0.82rem; color: rgba(240, 235, 226, 0.4)">
+              Built with Streamlit. Processes 50K store-product pairs.
+              Configurable safety stock multiplier, surge alert threshold, and
+              price assumptions. CSV export for purchase orders.
+            </p>
+            <div style="margin-top: 32px">
+              <a
+                href="https://quickcommersev2-t4vfbm9h85gbdmcvymkssq.streamlit.app/"
+                target="_blank"
+                class="btn-dashboard magnetic"
+                >Open Live Dashboard ↗</a
+              >
+              <a
+                href="https://github.com/ShreyaPMohanty6/QUickCommersev2"
+                target="_blank"
+                class="btn-github magnetic"
+                >GitHub ↗</a
+              >
+            </div>
+          </div>
+
+          <div class="dashboard-mockup">
+            <div class="mockup-bar">
+              <div class="mockup-dots">
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+                <div class="mockup-dot"></div>
+              </div>
+              <div class="mockup-url">
+                quickcommersev2-t4vfbm9h85gbdmcvymkssq.streamlit.app
+              </div>
+            </div>
+            <div class="mockup-body">
+              <p>Demand Overview · Stockout Countdown · Lost Sales Audit</p>
+              <p>What-If Simulator · Smart Replenishment · Weather Impact</p>
+              <div
+                style="
+                  margin-top: 20px;
+                  display: flex;
+                  gap: 8px;
+                  flex-wrap: wrap;
+                  justify-content: center;
+                "
+              >
+                <span class="info-tag" style="font-size: 0.62rem"
+                  >7,242 units forecast</span
+                >
+                <span class="info-tag" style="font-size: 0.62rem"
+                  >74 at-risk products</span
+                >
+                <span class="info-tag teal" style="font-size: 0.62rem"
+                  >₹5,69,523 lost revenue</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modules-grid reveal">
+          <div class="module-card">
+            <div class="module-num">Module 01</div>
+            <div class="module-icon">📊</div>
+            <h3>Demand Overview</h3>
+            <p>
+              7-day aggregate demand forecast as headline KPIs: 7,242 units
+              total, 557 units/day average, 286 surge alerts (demand &gt; 2.5×
+              historical μᵢ), 6 critical stock items. Category donut chart
+              highlights Priority Replenishment targets.
+            </p>
+          </div>
+          <div class="module-card">
+            <div class="module-num">Module 02</div>
+            <div class="module-icon">⏱️</div>
+            <h3>Stockout Countdown</h3>
+            <p>
+              Four-tier risk stratification: CRITICAL (&lt;1 day, 6 items), HIGH
+              (1–3 days, 41 items), MEDIUM (3–7 days, 27 items), LOW (&gt;7
+              days, 0 items). Days of Cover = (7 × Stock Health) / Demand
+              Pressure.
+            </p>
+          </div>
+          <div class="module-card">
+            <div class="module-num">Module 03</div>
+            <div class="module-icon">💸</div>
+            <h3>Lost Sales Audit</h3>
+            <p>
+              Ghost revenue quantification using Stage 1 recovery: max(0, D_t −
+              y_t) per row. 37,968 units of lost sales → ₹5,69,523 foregone
+              revenue at ₹15 default price. Adjustable price field and top-20
+              product ranking.
+            </p>
+          </div>
+          <div class="module-card">
+            <div class="module-num">Module 04</div>
+            <div class="module-icon">🔬</div>
+            <h3>What-If Simulator</h3>
+            <p>
+              Interactive scenario testing with sliders for rainfall,
+              temperature, humidity, wind level, discount, promotion toggle, and
+              holiday flag. Category-level sensitivity model from Stage 1
+              coefficients.
+            </p>
+          </div>
+          <div class="module-card">
+            <div class="module-num">Module 05</div>
+            <div class="module-icon">📦</div>
+            <h3>Smart Replenishment</h3>
+            <p>
+              AI-powered order quantities: Required = 7-Day Forecast × Safety
+              Multiplier (default 1.20). 74 products, 868 total units, avg 12
+              units/order. Product_70 tops with 69 units. CSV purchase order
+              export.
+            </p>
+          </div>
+          <div class="module-card">
+            <div class="module-num">Module 06</div>
+            <div class="module-icon">🌦️</div>
+            <h3>Weather Impact Analysis</h3>
+            <p>
+              Historical and forecast weather overlay on demand patterns.
+              Rainfall uplift (β=0.108), temperature effects by category
+              (frozen: β=+0.065, meat: β=−0.067). Quantifies demand sensitivity
+              to meteorological events.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ INSIGHTS ═ -->
+    <section id="insights">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-num-display">08</div>
+          <div class="section-label-row">
+            <div class="section-label-line"></div>
+            <span class="label">What We Learned</span>
+          </div>
+          <h2 class="section-title">Key <span>Insights</span></h2>
+          <p class="section-intro">
+            Six distilled findings from building, running, and analyzing the
+            two-stage pipeline across 50,000 store-product pairs.
+          </p>
+        </div>
+
+        <div class="insights-list reveal">
+          <div class="insight-item">
+            <div class="insight-item-num">01</div>
+            <div class="insight-item-body">
+              <h4>Tweedie Objective is Non-Negotiable for Stage 1</h4>
+              <p>
+                The log-link Tweedie loss (p=1.5) inherently models power-law
+                zero-inflated demand. LightGBM and XGBoost both use it and
+                outperform Random Forest which relies on sample weighting alone
+                — a 0.67 pp WAPE gap (RF 28.50% vs LGB 27.83%). For demand data
+                with α = 2.83, the loss function choice matters more than model
+                architecture.
+              </p>
+            </div>
+            <div class="insight-item-metric">
+              <div class="big-metric">0.67pp<small>WAPE gap RF→LGB</small></div>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-item-num">02</div>
+            <div class="insight-item-body">
+              <h4>Data Coverage &gt; Model Complexity</h4>
+              <p>
+                LightGBM trained on all 50,000 store-product pairs (3.8M rows)
+                achieves 29.36% Stage 2 WAPE — matching the paper's Temporal
+                Fusion Transformer without attention mechanisms, sequence
+                padding, or GPU compute. The ensemble improves only 0.06 pp over
+                standalone LightGBM, confirming diminishing returns once
+                training data is complete.
+              </p>
+            </div>
+            <div class="insight-item-metric">
+              <div class="big-metric">
+                0.06pp<small>Ensemble gain over LGB</small>
+              </div>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-item-num">03</div>
+            <div class="insight-item-body">
+              <h4>Post-Hoc Calibration is the Primary WPE Control</h4>
+              <p>
+                A single scalar c = 1.0748 reduces Stage 1 WPE from −7.37% (raw
+                sales baseline) to +0.00%. Per-horizon calibration factors c_h ∈
+                [1.052, 1.109] in Stage 2 account for increasing underestimation
+                as lag features become stale. Calibration is more powerful than
+                architecture changes for bias control.
+              </p>
+            </div>
+            <div class="insight-item-metric">
+              <div class="big-metric">
+                −7.37%→0%<small>WPE via calibration</small>
+              </div>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-item-num">04</div>
+            <div class="insight-item-body">
+              <h4>MLP Softplus Yields Lowest Systematic Bias</h4>
+              <p>
+                Despite higher WAPE (30.69%), the MLP achieves the lowest WPE of
+                all Stage 2 models (−5.86%) without explicit calibration. The
+                Softplus output activation and Huber loss training regime
+                intrinsically regularize scale errors, avoiding the hard
+                truncation of ReLU that can amplify bias in gradient boosting
+                tree splits.
+              </p>
+            </div>
+            <div class="insight-item-metric">
+              <div class="big-metric">
+                −5.86%<small>MLP WPE (lowest)</small>
+              </div>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-item-num">05</div>
+            <div class="insight-item-body">
+              <h4>ρ_DS = +0.46 — The Principal Remaining Gap</h4>
+              <p>
+                Our Stage 1 ρ_DS of +0.46 vs TimesNet's +0.07 is the clearest
+                signal of what's left to improve. High-demand pairs have higher
+                stockout rates, concentrating supply-demand correlation in top
+                SKUs. This structural confound cannot be fully disentangled by a
+                single-stage tabular model.
+              </p>
+            </div>
+            <div class="insight-item-metric">
+              <div class="big-metric">
+                +0.46<small>vs +0.07 (TimesNet)</small>
+              </div>
+            </div>
+          </div>
+          <div class="insight-item">
+            <div class="insight-item-num">06</div>
+            <div class="insight-item-body">
+              <h4>NaN Lag Masking Preserves 68.7% of Rows</h4>
+              <p>
+                A key design decision: lag features use sale_for_lag (NaN on
+                stockout days) rather than the raw censored sale_amount (0 on
+                stockout days). Censored zeros contaminate rolling statistics
+                and lags, causing the model to learn that demand is low when
+                it's actually censored. NaN propagation preserves 68.7% of rows
+                that would otherwise be dropped.
+              </p>
+            </div>
+            <div class="insight-item-metric">
+              <div class="big-metric">68.7%<small>rows preserved</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ CONCLUSION ═ -->
+    <section id="conclusion">
+      <div class="conclusion-inner">
+        <div class="section-label-row" style="justify-content: center">
+          <div class="section-label-line" style="width: 32px"></div>
+          <span class="label">Summary</span>
+          <div class="section-label-line" style="width: 32px"></div>
+        </div>
+        <h2 class="section-title" style="margin-top: 20px">Conclusion</h2>
+        <p style="margin-top: 28px">
+          We built a two-stage pipeline for censored demand forecasting on
+          FreshRetailNet-50K, demonstrating that lightweight gradient boosting
+          with the right loss function can match computationally expensive deep
+          learning — while remaining interpretable and deployable.
+        </p>
+
+        <div class="conclusion-findings reveal">
+          <div class="finding-card">
+            <div class="finding-num">01</div>
+            <h4>Tweedie is Essential</h4>
+            <p>
+              Both LightGBM and XGBoost outperform Random Forest. The log-link
+              loss function, not tree count or depth, is the key differentiator
+              for power-law demand recovery.
+            </p>
+          </div>
+          <div class="finding-card">
+            <div class="finding-num">02</div>
+            <h4>MLP Provides Bias Complement</h4>
+            <p>
+              The Softplus activation and Huber loss give MLP (−5.86% WPE) lower
+              bias than LightGBM (−7.81%). Ensemble blending captures both WAPE
+              accuracy and bias control (29.30% final WAPE).
+            </p>
+          </div>
+          <div class="finding-card">
+            <div class="finding-num">03</div>
+            <h4>ρ_DS = +0.46 Guides Future Work</h4>
+            <p>
+              Residual supply-demand correlation is the principal remaining gap.
+              Future work: demand-supply decoupling, quantile-aware Stage 2
+              training, real-time dashboard ingestion.
+            </p>
+          </div>
+        </div>
+
+        <div
+          style="
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
+          <a
+            href="https://quickcommersev2-t4vfbm9h85gbdmcvymkssq.streamlit.app/"
+            target="_blank"
+            class="btn-primary magnetic"
+            >View Live Dashboard ↗</a
+          >
+          <a
+            href="https://github.com/Parth-Sidhu-4/AI-based-Hyperlocal-Demand-Prediction-for-Dark-Stores-Quick-Commerce/tree/main"
+            target="_blank"
+            class="btn-outline magnetic"
+            >GitHub Repository ↗</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ TEAM ═ -->
+    <section id="team">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 72px">
+          <div
+            class="section-label-row"
+            style="justify-content: center; margin-bottom: 16px"
+          >
+            <div class="section-label-line" style="width: 32px"></div>
+            <span class="label">The People Behind This</span>
+            <div class="section-label-line" style="width: 32px"></div>
+          </div>
+          <h2 class="section-title" style="color: var(--ivory)">
+            Our <span>Team</span>
+          </h2>
+          <p
+            style="
+              color: var(--ivory-dim);
+              max-width: 520px;
+              margin: 16px auto 0;
+              font-size: 0.93rem;
+              line-height: 1.8;
+            "
+          >
+            B.Tech — Electronics and Communication Engineering (Specialisation:
+            Rail Engineering)<br />
+            Gati Shakti Vishwavidyalaya · April 2026
+          </p>
+        </div>
+
+        <div class="team-grid reveal">
+          <div class="team-card">
+            <img src="./team/parth.jpeg" alt="Parth Sidhu" class="team-photo" />
+            <div class="team-name">Parth Sidhu</div>
+            <div class="team-section-label">
+              Machine Learning &amp; Modeling
+            </div>
+          </div>
+          <div class="team-card">
+            <img
+              src="./team/shreya.jpg"
+              alt="Shreya Mohanty"
+              class="team-photo"
+            />
+            <div class="team-name">Shreya Mohanty</div>
+            <div class="team-section-label">Dashboard &amp; Deployment</div>
+          </div>
+          <div class="team-card">
+            <img
+              src="./team/srijan.png"
+              alt="Srijan Gupta"
+              class="team-photo"
+            />
+            <div class="team-name">Srijan Gupta</div>
+            <div class="team-section-label">Forecasting &amp; Evaluation</div>
+          </div>
+          <div class="team-card">
+            <img src="./team/assir.jpg" alt="Assir Thota" class="team-photo" />
+            <div class="team-name">Assir Thota</div>
+            <div class="team-section-label">Dataset &amp; Analysis</div>
+          </div>
+          <div class="team-card">
+            <img
+              src="./team/ayush.jpeg"
+              alt="Ayush Vaibhav Gond"
+              class="team-photo"
+            />
+            <div class="team-name">Ayush Vaibhav Gond</div>
+            <div class="team-section-label">Pipeline Architecture</div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 72px 0 32px">
+          <div class="section-label-row" style="justify-content: center">
+            <div class="section-label-line" style="width: 32px"></div>
+            <span class="label">Faculty Mentor</span>
+            <div class="section-label-line" style="width: 32px"></div>
+          </div>
+        </div>
+
+        <div class="faculty-card reveal">
+          <img
+            src="./team/anshika.jpeg"
+            alt="Dr. Anshika Srivastava"
+            class="faculty-photo"
+          />
+
+          <div class="faculty-info">
+            <h3>Dr. Anshika Srivastava</h3>
+            <div class="faculty-title">
+              Assistant Professor &amp; Program Coordinator (ECE)
+            </div>
+            <div class="faculty-dept">
+              Department of Electronics &amp; Communication Engineering
+            </div>
+            <div class="faculty-uni">
+              School of Technology · Gati Shakti Vishwavidyalaya<br />
+              A Central University under the Ministry of Railways, Govt. of
+              India
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════ FOOTER ═ -->
+    <footer>
+      <div class="footer-left">
+        <div>
+          AI-Based Hyperlocal Demand Prediction for Dark Stores · GSV 2026
+        </div>
+        <div>
+          Course: Artificial Intelligence &amp; Machine Learning ·
+          FreshRetailNet-50K
+        </div>
+      </div>
+      <div class="footer-right">
+        <a
+          href="https://arxiv.org/abs/2505.16319"
+          target="_blank"
+          class="footer-link"
+          >Dataset Paper ↗</a
+        >
+        <a
+          href=" https://drive.google.com/file/d/1XS7vXIwc1ScWm8xfCXvFJLFGbZ7Cu2J1/view"
+          target="_blank"
+          class="footer-link"
+          >Project Report ↗</a
+        >
+
+        <a
+          href="https://huggingface.co/datasets/Dingdong-Inc/FreshRetailNet-50K"
+          target="_blank"
+          class="footer-link"
+          >Dataset ↗</a
+        >
+        <a
+          href="https://github.com/Parth-Sidhu-4/AI-based-Hyperlocal-Demand-Prediction-for-Dark-Stores-Quick-Commerce/tree/main"
+          target="_blank"
+          class="footer-link"
+          >GitHub ↗</a
+        >
+        <a
+          href="https://quickcommersev2-t4vfbm9h85gbdmcvymkssq.streamlit.app/"
+          target="_blank"
+          class="footer-link"
+          >Dashboard ↗</a
+        >
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>
